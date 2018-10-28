@@ -18,3 +18,5 @@ if __name__ == "__main__":
     print(f)
     print(g)
     print(f + g)
+
+    print(f(ModularInt(3, modulo)))
