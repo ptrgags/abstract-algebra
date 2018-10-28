@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+from euclidean_algo import xgcd
+
 class ModularInt(object):
     """
     Represent a modular arithmetic equivalence
@@ -49,6 +51,17 @@ class ModularInt(object):
     def __bool__(self):
         return self.val != 0
 
+    @property
+    def inverse(self):
+        """
+        Get the multiplicative inverse if it exists
+        """
+        (g, x, y) = xgcd(self.modulo, self.val)
+        if g != 1:
+            raise ValueError("{} has no multiplicative inverse".format(self))
+        else:
+            return ModularInt(y, self.modulo)
+
     @classmethod
     def zero(cls, m):
         return ModularInt(0, m)
@@ -69,3 +82,6 @@ if __name__ == "__main__":
     print(a * b == a)
     print(a * b == b)
     print(a - b)
+
+    a = ModularInt(3, 5)
+    print(a.inverse)
