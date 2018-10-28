@@ -5,6 +5,7 @@ class Polynomial(object):
     Polynomial where the coefficients can be from
     any field
     """
+    # TODO: add `one` for pretty printing
     def __init__(self, *coeffs, zero=0):
         """
         Initialize a polynomial.
@@ -99,9 +100,9 @@ class Polynomial(object):
                 continue
 
             if i == 0:
-                yield str(a)
+                yield "({})".format(a)
             else:
-                yield "{}x^{}".format(a, i)
+                yield "({})x^{}".format(a, i)
 
     def __repr__(self):
         terms = reversed(list(self.format_terms()))

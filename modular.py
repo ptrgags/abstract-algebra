@@ -39,6 +39,20 @@ class ModularInt(object):
     def __ne__(self, other):
         return not (self == other)
 
+    def __neg__(self):
+        return ModularInt(-self.val, self.modulo)
+
+    def __bool__(self):
+        return self.val != 0
+
+    @classmethod
+    def zero(cls, m):
+        return ModularInt(0, m)
+
+    @classmethod
+    def one(cls, m):
+        return ModularInt(1, m)
+
 if __name__ == "__main__":
     a = ModularInt(10, 5)
     b = ModularInt(20, 5)
