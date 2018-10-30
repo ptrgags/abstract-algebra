@@ -17,7 +17,9 @@ class Polynomial(object):
 
         Polynomial(1, 0, 3, 2) = 2x^3 + 3x^2 + 1
         """
-        self.coeffs = coeffs
+        self.coeffs = list(coeffs)
+        while self.coeffs and self.coeffs[-1] == zero:
+            self.coeffs = self.coeffs[:-1]
 
         # For custom types, store the additive identity
         # since this is needed for summing values
@@ -64,12 +66,12 @@ class Polynomial(object):
         return self + (-other)
 
     def __mul__(self, other):
-        deg = self.degree * other.degree
+        deg = self.degree + other.degree
         result = [self.zero] * (deg + 1)
 
         # Combine polynomials
         for i, a in enumerate(self.coeffs):
-            for j, b in enumerate(self.coeffs):
+            for j, b in enumerate(other.coeffs):
                 result[i + j] += a * b
 
         return Polynomial(*result, self.zero)
@@ -88,6 +90,8 @@ class Polynomial(object):
     def degree(self):
         """
         Get the degree of the polynomial
+        
+        Note: this returns -1 for constant polynomials
         """
         return len(self.coeffs) - 1
 
@@ -135,29 +139,28 @@ class Polynomial(object):
         polynomial division is closer to integer division
         (quotient, remainder) than real division (quotient only)
         """
-        q, _ = divmod(self, other)
+        q, _ = divmod(self, other, self.zero)
         return q
 
     def __mod__(self, other):
         """
         Compute the remainder when f(x) // g(x)
         """
-        _, r = divmod(self, other)
+        _, r = divmod(self, other, self.zero)
         return r
 
     @classmethod
-    def divmod(cls, dividend, divisor):
+    def divmod(cls, dividend, divisor, zero=0):
         """
         Compute the quotient and remainder when polynomial
         f is divided by g using recursive long division
 
         returns (q, r) where q is the quotient, r is the remainder
         """
-        print("{} / {}".format(dividend, divisor))
         if dividend.degree < divisor.degree:
             # Base case: deg(f) < deg(g) so g does not divide f
             # so return f as the remainder with quotient 0
-            return (0, dividend)
+            return (Polynomial(*[], zero=zero), dividend)
         else:
             # Recursive case: compute one term of the quotient
             # and subtract a multiple of the divisor
@@ -167,18 +170,16 @@ class Polynomial(object):
             degree = dividend.degree - divisor.degree 
             
             # Construct a Polynomial object
-            term_as_array = [0] * degree + [coeff]
-            quotient_term = Polynomial(*term_as_array, zero=dividend.zero)
-            print(quotient_term, divisor, quotient_term * divisor)
+            term_as_array = [zero] * degree + [coeff]
+            quotient_term = Polynomial(*term_as_array, zero=zero)
 
             # subtract q * g from our dividend f for the next round
             # of calculations
             new_remainder = dividend - quotient_term * divisor
-            print(new_remainder)
 
             # Recursively compute the quotient of what's left
             # until we find the remainder of f / g
-            q, r = divmod(new_remainder, divisor)
+            q, r = cls.divmod(new_remainder, divisor, zero)
 
             # we need to add our quotient term to the quotient:
             return (quotient_term + q, r)
@@ -204,6 +205,16 @@ if __name__ == "__main__":
 
     # TODO: Division won't work until I get
     # multiplication to work
-    #h = Polynomial(1.0, 0.0, 3.0, 4.0)
-    #i = Polynomial(4.0, 1.0, 3.0, 2.0)
-    #print(divmod(h, i))
+    h = Polynomial(1.0, 0.0, 3.0, 4.0, zero=0.0)
+    i = Polynomial(4.0, 1.0, 3.0, 2.0, zero=0.0)
+    q, r = divmod(h, i)
+    print(h)
+    print(i)
+    print(q)
+    print(r)
+    print(q * i + r)
+
+    j = Polynomial(-3.0, 2.0, zero=0.0)
+    print(j)
+    print(divmod(h, j))
+
