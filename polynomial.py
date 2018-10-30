@@ -91,6 +91,13 @@ class Polynomial(object):
         """
         return len(self.coeffs) - 1
 
+    @property
+    def leading_coeff(self):
+        """
+        Return the leading coefficient of the polynomial
+        """
+        return self.coeffs[self.degree]
+
     def format_terms(self):
         """
         Pretty print each term as a generator
@@ -107,6 +114,74 @@ class Polynomial(object):
     def __repr__(self):
         terms = reversed(list(self.format_terms()))
         return " + ".join(terms)
+
+    def __divmod__(self, other):
+        """
+        Find the quotient and remainder when f(x) // g(x)
+        using long division.
+
+        (see the class method below for implementation)
+
+        This returns (q, r) where q is the quotient, r is the
+        remainder
+        """
+        return Polynomial.divmod(self, other)
+
+    def __floordiv__(self, other):
+        """
+        Compute the quotient when f(x) // g(x)
+
+        Note that I use f // g and not f / g because
+        polynomial division is closer to integer division
+        (quotient, remainder) than real division (quotient only)
+        """
+        q, _ = divmod(self, other)
+        return q
+
+    def __mod__(self, other):
+        """
+        Compute the remainder when f(x) // g(x)
+        """
+        _, r = divmod(self, other)
+        return r
+
+    @classmethod
+    def divmod(cls, dividend, divisor):
+        """
+        Compute the quotient and remainder when polynomial
+        f is divided by g using recursive long division
+
+        returns (q, r) where q is the quotient, r is the remainder
+        """
+        print("{} / {}".format(dividend, divisor))
+        if dividend.degree < divisor.degree:
+            # Base case: deg(f) < deg(g) so g does not divide f
+            # so return f as the remainder with quotient 0
+            return (0, dividend)
+        else:
+            # Recursive case: compute one term of the quotient
+            # and subtract a multiple of the divisor
+
+            # Compute the leading term
+            coeff = dividend.leading_coeff / divisor.leading_coeff
+            degree = dividend.degree - divisor.degree 
+            
+            # Construct a Polynomial object
+            term_as_array = [0] * degree + [coeff]
+            quotient_term = Polynomial(*term_as_array, zero=dividend.zero)
+            print(quotient_term, divisor, quotient_term * divisor)
+
+            # subtract q * g from our dividend f for the next round
+            # of calculations
+            new_remainder = dividend - quotient_term * divisor
+            print(new_remainder)
+
+            # Recursively compute the quotient of what's left
+            # until we find the remainder of f / g
+            q, r = divmod(new_remainder, divisor)
+
+            # we need to add our quotient term to the quotient:
+            return (quotient_term + q, r)
 
 
 if __name__ == "__main__":
@@ -125,3 +200,10 @@ if __name__ == "__main__":
     print(f * g)
 
     print(f(2))
+
+
+    # TODO: Division won't work until I get
+    # multiplication to work
+    #h = Polynomial(1.0, 0.0, 3.0, 4.0)
+    #i = Polynomial(4.0, 1.0, 3.0, 2.0)
+    #print(divmod(h, i))
