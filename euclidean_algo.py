@@ -6,7 +6,7 @@ def gcd(a, b, zero=0):
     if b == zero:
         return a
     else:
-        return gcd(b, a % b)
+        return gcd(b, a % b, zero=zero)
 
 def xgcd(a, b, zero=0, one=1):
     r0 = a

@@ -74,7 +74,7 @@ class Polynomial(object):
             for j, b in enumerate(other.coeffs):
                 result[i + j] += a * b
 
-        return Polynomial(*result, self.zero)
+        return Polynomial(*result, zero=self.zero)
 
     def __call__(self, x):
         """
@@ -116,8 +116,11 @@ class Polynomial(object):
                 yield "({})x^{}".format(a, i)
 
     def __repr__(self):
-        terms = reversed(list(self.format_terms()))
-        return " + ".join(terms)
+        if self.degree == -1:
+            return str(self.zero)
+        else:
+            terms = reversed(list(self.format_terms()))
+            return " + ".join(terms)
 
     def __divmod__(self, other):
         """
@@ -129,7 +132,7 @@ class Polynomial(object):
         This returns (q, r) where q is the quotient, r is the
         remainder
         """
-        return Polynomial.divmod(self, other)
+        return Polynomial.divmod(self, other, self.zero)
 
     def __floordiv__(self, other):
         """
@@ -139,14 +142,14 @@ class Polynomial(object):
         polynomial division is closer to integer division
         (quotient, remainder) than real division (quotient only)
         """
-        q, _ = divmod(self, other, self.zero)
+        q, _ = divmod(self, other)
         return q
 
     def __mod__(self, other):
         """
         Compute the remainder when f(x) // g(x)
         """
-        _, r = divmod(self, other, self.zero)
+        _, r = divmod(self, other)
         return r
 
     @classmethod
@@ -160,7 +163,7 @@ class Polynomial(object):
         if dividend.degree < divisor.degree:
             # Base case: deg(f) < deg(g) so g does not divide f
             # so return f as the remainder with quotient 0
-            return (Polynomial(*[], zero=zero), dividend)
+            return (cls.zero(zero), dividend)
         else:
             # Recursive case: compute one term of the quotient
             # and subtract a multiple of the divisor
@@ -171,7 +174,7 @@ class Polynomial(object):
             
             # Construct a Polynomial object
             term_as_array = [zero] * degree + [coeff]
-            quotient_term = Polynomial(*term_as_array, zero=zero)
+            quotient_term = cls(*term_as_array, zero=zero)
 
             # subtract q * g from our dividend f for the next round
             # of calculations
@@ -183,6 +186,14 @@ class Polynomial(object):
 
             # we need to add our quotient term to the quotient:
             return (quotient_term + q, r)
+
+    @classmethod
+    def zero(cls, zero_F):
+        return cls(*[], zero=zero_F)
+
+    @classmethod
+    def one(cls, zero_F, one_F):
+        return cls(one_F, zero=zero_F)
 
 
 if __name__ == "__main__":

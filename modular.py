@@ -35,6 +35,9 @@ class ModularInt(object):
         new_val = self.val * other.val
         return ModularInt(new_val,  self.modulo)
 
+    def __truediv__(self, other):
+        return self * other.inverse
+
     def __pow__(self, exp):
         new_val = pow(self.val, exp, self.modulo)
         return ModularInt(new_val, self.modulo)
