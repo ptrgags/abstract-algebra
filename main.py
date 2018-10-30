@@ -13,14 +13,15 @@ if __name__ == "__main__":
 
     f = Polynomial(*coeffs_f, zero=zero)
     g = Polynomial(*coeffs_g, zero=zero)
-    print(f % g)
 
-    print("{} / {} = {} with remainder {}".format(f, g, f // g, f % g))
+    print("f =", f)
+    print("g =", g)
+    print("f / g = {} with remainder {}".format(f, g, f // g, f % g))
 
     poly_zero = Polynomial.zero(zero)
     poly_one = Polynomial.one(one, zero)
     d = gcd(f, g, zero=poly_zero)
-    print("gcd({}, {}) = {}".format(f, g, d))
+    print("gcd(f, g) = {}".format(d))
     
     # TODO: Need to debug thhis more
     #d, x, y = xgcd(f, g, zero=poly_zero, one=poly_one) 
